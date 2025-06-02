@@ -123,6 +123,7 @@ export default function DashboardPage() {
                     <TableHead className="min-w-[180px]">Start Time</TableHead>
                     <TableHead className="min-w-[180px]">End Time</TableHead>
                     <TableHead className="text-right min-w-[100px]">Winners</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -148,6 +149,11 @@ export default function DashboardPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         {giveaway.num_winners}
+                      </TableCell>
+                      <TableCell>
+                        <Link to={`/giveaway/${giveaway.id}`}>
+                          <Button variant="outline" size="sm">View</Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}
