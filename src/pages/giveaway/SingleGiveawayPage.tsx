@@ -32,7 +32,7 @@ export default function SingleGiveawayPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Invalid giveaway ID",
+          description: "The giveaway you're searching for does not exist",
         })
         navigate('/', { replace: true })
         return
@@ -51,7 +51,7 @@ export default function SingleGiveawayPage() {
             toast({
               variant: "destructive",
               title: "Not Found",
-              description: "The giveaway you are looking for does not exist.",
+              description: "The giveaway you're searching for does not exist",
             })
             navigate('/', { replace: true })
             return
@@ -60,7 +60,7 @@ export default function SingleGiveawayPage() {
           toast({
             variant: "destructive",
             title: "Error",
-            description: "Could not load giveaway details.",
+            description: "Could not load giveaway details",
           })
           navigate('/', { replace: true })
           return
