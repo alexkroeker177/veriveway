@@ -71,6 +71,28 @@ export default function HomePage() {
     return text.slice(0, maxLength) + '...'
   }
 
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'published':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'published':
+        return 'Upcoming'
+      case 'active':
+        return 'Active'
+      default:
+        return status
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Available Giveaways</h1>
@@ -92,12 +114,18 @@ export default function HomePage() {
           {publicGiveaways.map((giveaway) => (
             <Card key={giveaway.id} className="flex flex-col h-full">
               <CardHeader>
-                <CardTitle className="text-xl sm:text-2xl line-clamp-2">
-                  {giveaway.title}
-                </CardTitle>
-                <p className="text-sm text-gray-500">
-                  Created by: {giveaway.creator_id}
-                </p>
+                <div className="flex justify-between items-start gap-2">
+                  <CardTitle className="text-xl sm:text-2xl line-clamp-2">
+                    {giveaway.title}
+                  </CardTitle>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(
+                      giveaway.status
+                    )}`}
+                  >
+                    {getStatusLabel(giveaway.status)}
+                  </span>
+                </div>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-gray-600 mb-4 text-sm sm:text-base">
@@ -114,7 +142,9 @@ export default function HomePage() {
               </CardContent>
               <CardFooter>
                 <Link to={`/giveaway/${giveaway.id}`} className="w-full">
-                  <Button className="w-full">View Details</Button>
+                  <Button className="w-full">
+                    {giveaway.status === 'published' ? 'View Upcoming' : 'Join Now'}
+                  </Button>
                 </Link>
               </CardFooter>
             </Card>
