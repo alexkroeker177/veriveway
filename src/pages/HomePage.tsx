@@ -38,7 +38,7 @@ export default function HomePage() {
             end_time,
             creator_id
           `)
-          .eq('status', 'published')
+          .eq('status', 'active')
           .gt('end_time', new Date().toISOString())
           .order('end_time', { ascending: true })
 
