@@ -15,6 +15,9 @@ type Giveaway = {
   title: string
   prize_details: string
   end_time: string
+  creator: {
+    email: string
+  }
 }
 
 export default function HomePage() {
@@ -30,7 +33,13 @@ export default function HomePage() {
 
         const { data, error: fetchError } = await supabase
           .from('giveaways')
-          .select('id, title, prize_details, end_time')
+          .select(`
+            id, 
+            title, 
+            prize_details, 
+            end_time,
+            creator:creator_id(email)
+          `)
           .eq('status', 'published')
           .gt('end_time', new Date().toISOString())
           .order('end_time', { ascending: true })
@@ -84,6 +93,9 @@ export default function HomePage() {
                 <CardTitle className="text-xl sm:text-2xl line-clamp-2">
                   {giveaway.title}
                 </CardTitle>
+                <p className="text-sm text-gray-500">
+                  Created by: {giveaway.creator?.email}
+                </p>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-gray-600 mb-4 text-sm sm:text-base">
