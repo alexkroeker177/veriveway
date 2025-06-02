@@ -3,6 +3,13 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/components/ui/use-toast'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -12,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { MoreHorizontal } from 'lucide-react'
 
 type Giveaway = {
   id: string
@@ -55,6 +63,38 @@ export default function DashboardPage() {
     fetchGiveaways()
   }, [currentUser])
 
+  const handleUpdateStatus = async (giveawayId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('giveaways')
+        .update({ status: newStatus })
+        .eq('id', giveawayId)
+        .eq('creator_id', currentUser?.id)
+
+      if (error) throw error
+
+      // Update local state
+      setGiveaways(prevGiveaways =>
+        prevGiveaways.map(giveaway =>
+          giveaway.id === giveawayId
+            ? { ...giveaway, status: newStatus }
+            : giveaway
+        )
+      )
+
+      toast({
+        title: "Status Updated",
+        description: `Giveaway status changed to ${newStatus}.`
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update status.",
+        variant: "destructive"
+      })
+    }
+  }
+
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
       dateStyle: 'medium',
@@ -66,6 +106,8 @@ export default function DashboardPage() {
     switch (status) {
       case 'draft':
         return 'bg-gray-100 text-gray-800'
+      case 'published':
+        return 'bg-yellow-100 text-yellow-800'
       case 'active':
         return 'bg-green-100 text-green-800'
       case 'ended_awaiting_draw':
@@ -151,9 +193,55 @@ export default function DashboardPage() {
                         {giveaway.num_winners}
                       </TableCell>
                       <TableCell>
-                        <Link to={`/giveaway/${giveaway.id}`}>
-                          <Button variant="outline" size="sm">View</Button>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link to={`/giveaway/${giveaway.id}`}>
+                            <Button variant="outline" size="sm">View</Button>
+                          </Link>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {giveaway.status === 'draft' && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUpdateStatus(giveaway.id, 'published')}
+                                  >
+                                    Publish (Upcoming)
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUpdateStatus(giveaway.id, 'active')}
+                                  >
+                                    Make Active (Joinable)
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {giveaway.status === 'published' && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUpdateStatus(giveaway.id, 'active')}
+                                  >
+                                    Make Active (Joinable)
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUpdateStatus(giveaway.id, 'ended')}
+                                  >
+                                    End Giveaway
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {giveaway.status === 'active' && (
+                                <DropdownMenuItem
+                                  onClick={() => handleUpdateStatus(giveaway.id, 'ended')}
+                                >
+                                  End Giveaway
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -164,4 +252,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )}
+  )
+}
