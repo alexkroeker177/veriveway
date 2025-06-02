@@ -75,16 +75,15 @@ export default function SingleGiveawayPage() {
 
         setGiveaway(giveawayData)
 
-        // Check if user has already joined
+        // Check if user has already joined - removed .single() to fix the error
         if (currentUser && giveawayData) {
-          const { count, error: participationError } = await supabase
+          const { data: participationData, error: participationError } = await supabase
             .from('participants')
-            .select('id', { count: 'exact' })
+            .select('id')
             .eq('giveaway_id', giveawayData.id)
             .eq('participant_identifier', currentUser.id)
-            .single()
 
-          if (!participationError && count && count > 0) {
+          if (!participationError && participationData && participationData.length > 0) {
             setHasJoined(true)
           }
         }

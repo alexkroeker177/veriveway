@@ -15,9 +15,7 @@ type Giveaway = {
   title: string
   prize_details: string
   end_time: string
-  creator: {
-    email: string
-  }
+  creator_id: string
 }
 
 export default function HomePage() {
@@ -38,7 +36,7 @@ export default function HomePage() {
             title, 
             prize_details, 
             end_time,
-            creator:creator_id(email)
+            creator_id
           `)
           .eq('status', 'published')
           .gt('end_time', new Date().toISOString())
@@ -94,7 +92,7 @@ export default function HomePage() {
                   {giveaway.title}
                 </CardTitle>
                 <p className="text-sm text-gray-500">
-                  Created by: {giveaway.creator?.email}
+                  Created by: {giveaway.creator_id}
                 </p>
               </CardHeader>
               <CardContent className="flex-grow">
