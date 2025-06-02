@@ -21,6 +21,7 @@ type Giveaway = {
   end_time: string
   num_winners: number
   status: string
+  creator_id: string
 }
 
 export default function SingleGiveawayPage() {
@@ -75,7 +76,7 @@ export default function SingleGiveawayPage() {
 
         setGiveaway(giveawayData)
 
-        // Check if user has already joined - removed .single() to fix the error
+        // Check if user has already joined
         if (currentUser && giveawayData) {
           const { data: participationData, error: participationError } = await supabase
             .from('participants')
@@ -141,6 +142,8 @@ export default function SingleGiveawayPage() {
     switch (status) {
       case 'draft':
         return 'bg-gray-100 text-gray-800'
+      case 'published':
+        return 'bg-yellow-100 text-yellow-800'
       case 'active':
         return 'bg-green-100 text-green-800'
       case 'ended_awaiting_draw':
@@ -149,6 +152,33 @@ export default function SingleGiveawayPage() {
         return 'bg-blue-100 text-blue-800'
       default:
         return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getGiveawayState = () => {
+    if (!giveaway) return null
+
+    const now = new Date()
+    const startTime = new Date(giveaway.start_time)
+    const endTime = new Date(giveaway.end_time)
+
+    if (giveaway.status === 'published' && startTime > now) {
+      return {
+        type: 'upcoming',
+        message: `This giveaway starts on ${formatDateTime(giveaway.start_time)}. Check back then to join!`
+      }
+    }
+
+    if (giveaway.status === 'active' && startTime <= now && endTime > now) {
+      return {
+        type: 'joinable',
+        message: null
+      }
+    }
+
+    return {
+      type: 'inactive',
+      message: 'This giveaway is not currently active for joining.'
     }
   }
 
@@ -166,7 +196,7 @@ export default function SingleGiveawayPage() {
     return null
   }
 
-  const isGiveawayActive = giveaway.status === 'active' && new Date(giveaway.end_time) > new Date()
+  const giveawayState = getGiveawayState()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -217,7 +247,7 @@ export default function SingleGiveawayPage() {
               <p className="text-green-600 font-medium">
                 You've already joined this giveaway!
               </p>
-            ) : isGiveawayActive ? (
+            ) : giveawayState?.type === 'joinable' ? (
               <Button
                 onClick={handleJoinGiveaway}
                 disabled={isJoining}
@@ -227,7 +257,7 @@ export default function SingleGiveawayPage() {
               </Button>
             ) : (
               <p className="text-gray-600">
-                This giveaway is not currently active for joining.
+                {giveawayState?.message}
               </p>
             )}
           </CardFooter>
