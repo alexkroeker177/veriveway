@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { toast } from '@/components/ui/use-toast'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
+  CardFooter,
 } from '@/components/ui/card'
 
 type Giveaway = {
@@ -23,8 +26,12 @@ type Giveaway = {
 export default function SingleGiveawayPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { currentUser } = useAuth()
   const [giveaway, setGiveaway] = useState<Giveaway | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isJoining, setIsJoining] = useState(false)
+  const [hasJoined, setHasJoined] = useState(false)
+  const [participationChecked, setParticipationChecked] = useState(false)
 
   useEffect(() => {
     async function fetchGiveaway() {
@@ -40,14 +47,14 @@ export default function SingleGiveawayPage() {
 
       try {
         setLoading(true)
-        const { data, error } = await supabase
+        const { data: giveawayData, error: giveawayError } = await supabase
           .from('giveaways')
           .select('*')
           .eq('id', id)
           .single()
 
-        if (error) {
-          if (error.code === 'PGRST116') {
+        if (giveawayError) {
+          if (giveawayError.code === 'PGRST116') {
             toast({
               variant: "destructive",
               title: "Not Found",
@@ -66,14 +73,63 @@ export default function SingleGiveawayPage() {
           return
         }
 
-        setGiveaway(data)
+        setGiveaway(giveawayData)
+
+        // Check if user has already joined
+        if (currentUser && giveawayData) {
+          const { count, error: participationError } = await supabase
+            .from('participants')
+            .select('id', { count: 'exact' })
+            .eq('giveaway_id', giveawayData.id)
+            .eq('participant_identifier', currentUser.id)
+            .single()
+
+          if (!participationError && count && count > 0) {
+            setHasJoined(true)
+          }
+        }
       } finally {
+        setParticipationChecked(true)
         setLoading(false)
       }
     }
 
     fetchGiveaway()
-  }, [id, navigate])
+  }, [id, navigate, currentUser])
+
+  const handleJoinGiveaway = async () => {
+    if (!currentUser || !giveaway || hasJoined) return
+
+    try {
+      setIsJoining(true)
+
+      const participantData = {
+        giveaway_id: giveaway.id,
+        participant_identifier: currentUser.id,
+      }
+
+      const { error } = await supabase
+        .from('participants')
+        .insert([participantData])
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message || "Could not join giveaway.",
+        })
+        return
+      }
+
+      setHasJoined(true)
+      toast({
+        title: "Success!",
+        description: "You have successfully joined the giveaway.",
+      })
+    } finally {
+      setIsJoining(false)
+    }
+  }
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
@@ -110,6 +166,8 @@ export default function SingleGiveawayPage() {
   if (!giveaway) {
     return null
   }
+
+  const isGiveawayActive = giveaway.status === 'active' && new Date(giveaway.end_time) > new Date()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -153,6 +211,28 @@ export default function SingleGiveawayPage() {
             <p>{giveaway.num_winners}</p>
           </div>
         </CardContent>
+
+        {participationChecked && currentUser && (
+          <CardFooter className="flex flex-col items-center space-y-4">
+            {hasJoined ? (
+              <p className="text-green-600 font-medium">
+                You've already joined this giveaway!
+              </p>
+            ) : isGiveawayActive ? (
+              <Button
+                onClick={handleJoinGiveaway}
+                disabled={isJoining}
+                className="w-full sm:w-auto"
+              >
+                {isJoining ? 'Joining...' : 'Join Giveaway'}
+              </Button>
+            ) : (
+              <p className="text-gray-600">
+                This giveaway is not currently active for joining.
+              </p>
+            )}
+          </CardFooter>
+        )}
       </Card>
     </div>
   )
