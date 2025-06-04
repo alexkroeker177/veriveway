@@ -1,16 +1,17 @@
-# VeriGiveaway Documentation
+# Updated VeriGiveaway Documentation
 
 ## Project Overview
 VeriGiveaway is a web application built with React and TypeScript that enables users to create and participate in verified giveaways. The application uses modern web technologies and follows best practices for security and user experience.
 
 ## Tech Stack
 - **Frontend Framework**: React 18
-- **Language**: TypeScript
+- **Language**: TypeScript 5
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
 - **UI Components**: Radix UI
 - **Routing**: React Router DOM
-- **Backend Integration**: Supabase
+- **Backend Integration**: Supabase and Python 3.12 (+ FastAPI)
+- **Database**: PostgreSQL 16
 - **Development Tools**: ESLint, PostCSS
 
 ## Project Structure
@@ -55,6 +56,8 @@ veriveway/
 - `@supabase/supabase-js` - Backend integration
 - `react-router-dom` - Routing
 - `tailwindcss` - Styling
+- **Python Libraries**: FastAPI
+- **Database**: PostgreSQL
 
 ### Development Dependencies
 - TypeScript and related tools
@@ -103,7 +106,8 @@ veriveway/
 4. Update documentation as needed
 
 ## License
-This project is private and proprietary.
+This project is private and proprietary. 
+It is also compliant with the following open source licenses: MIT, Mozilla Public License 2.0, PostgreSQL License.
 
 ## Support
 For support and questions, please contact the development team.
