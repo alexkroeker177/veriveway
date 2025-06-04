@@ -106,8 +106,29 @@ veriveway/
 4. Update documentation as needed
 
 ## License
-This project is private and proprietary. 
-It is also compliant with the following open source licenses: MIT, Mozilla Public License 2.0, PostgreSQL License.
+| Dependency               | Latest Stable Version | License Compliance |                   Technology Compliance                   |
+| ------------------------ | :-------------------: | :----------------: | :-------------------------------------------------------: |
+| axios                    |        ✅ 1.4.0        |       MIT: ✅       |               MIT: ✅ (HTTP client, REST ok)               |
+| @radix-ui/react-dialog   |        ✅ 1.1.14       |       MIT: ✅       |   MIT: ❓ (React-based UI, React not explicitly allowed)   |
+| @radix-ui/react-toast    |        ✅ 1.2.14       |       MIT: ✅       |                     MIT: ❓ (see above)                    |
+| @supabase/supabase-js    |        ❌ 2.49.9       |       MIT: ✅       |         MIT: ❓ (Supabase/JS-SDK not in tech list)         |
+| react-router-dom         |        ✅ 6.22.2       |       MIT: ✅       |        MIT: ❓ (React Router not explicitly allowed)       |
+| tailwindcss              |        ✅ 3.4.1        |       MIT: ✅       |    MIT: ✅ (Tailwind CSS allowed as front-end framework)   |
+| class-variance-authority |        ✅ 0.7.1        |    Apache-2.0: ✅   | Apache-2.0: ❓ (Utility library, not explicitly mentioned) |
+| clsx                     |        ✅ 2.1.1        |       MIT: ✅       |     MIT: ❓ (Utility library, not explicitly mentioned)    |
+| lucide-react             |       ✅ 0.344.0       |       MIT: ✅       |             MIT: ❓ (React icons, React-based)             |
+| vite                     |        ✅ 5.4.2        |       MIT: ✅       |            MIT: ❓ (Build tool not in tech list)           |
+| eslint                   |        ✅ 9.11.1       |       MIT: ✅       |            MIT: ❓ (Lint tool not in tech list)            |
+| postcss                  |        ✅ 8.4.35       |       MIT: ✅       |         MIT: ❓ (PostCSS not explicitly mentioned)         |
+| typescript               |        ✅ 5.5.3        |    Apache-2.0: ✅   |       Apache-2.0: ✅ (TypeScript as allowed language)      |
+| autoprefixer             |       ❌ 10.4.18       |       MIT: ✅       |   MIT: ❓ (Build/styling tool, not explicitly mentioned)   |
+| react                    |        ✅ 18.3.1       |       MIT: ✅       |      MIT: ❓ (React not in 4.1.3 front-end frameworks)     |
+| react-dom                |        ✅ 18.3.1       |       MIT: ✅       |                     MIT: ❓ (see above)                    |
+| @vitejs/plugin-react     |        ✅ 4.3.2        |       MIT: ✅       |       MIT: ❓ (Plugin for React in Vite; React-based)      |
+| tailwind-merge           |        ✅ 2.2.1        |       MIT: ✅       |    MIT: ❓ (Tailwind utility, not explicitly mentioned)    |
+| tailwindcss-animate      |        ✅ 1.0.7        |       MIT: ✅       |     MIT: ❓ (Tailwind plugin, not explicitly mentioned)    |
+
+
 
 ## Support
 For support and questions, please contact the development team.
