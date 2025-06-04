@@ -24,7 +24,7 @@ veriveway/
 │   ├── App.tsx        # Main application component
 │   └── main.tsx       # Application entry point
 ├── public/            # Static assets
-└── configuration files
+└── configuration files.
 ```
 
 ## Key Features
