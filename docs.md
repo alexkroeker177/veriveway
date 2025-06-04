@@ -13,20 +13,21 @@ VeriGiveaway is a web application built with React and TypeScript that enables u
 - **Backend Integration**: Supabase and Python 3.12 (+ FastAPI)
 - **Database**: PostgreSQL 16
 - **Development Tools**: ESLint, PostCSS
+- **HTTP Client**: Axios
 
 ## Project Structure
-```
 veriveway/
 ├── src/
-│   ├── components/     # Reusable UI components
-│   ├── contexts/       # React context providers
-│   ├── lib/           # Utility functions and configurations
-│   ├── pages/         # Page components
-│   ├── App.tsx        # Main application component
-│   └── main.tsx       # Application entry point
-├── public/            # Static assets
+│ ├── api/ # Axios API handlers
+│ ├── components/ # Reusable UI components
+│ ├── contexts/ # React context providers
+│ ├── hooks/ # Custom React hooks
+│ ├── lib/ # Utility functions and configurations
+│ ├── pages/ # Page components
+│ ├── App.tsx # Main application component
+│ └── main.tsx # Application entry point
+├── public/ # Static assets
 └── configuration files
-```
 
 ## Key Features
 1. **Authentication System**
@@ -52,6 +53,7 @@ veriveway/
 
 ## Dependencies
 ### Core Dependencies
+- `axios` - HTTP client for API requests
 - `@radix-ui/react-*` - UI component primitives
 - `@supabase/supabase-js` - Backend integration
 - `react-router-dom` - Routing
