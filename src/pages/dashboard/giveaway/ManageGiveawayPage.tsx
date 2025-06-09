@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from '@/components/ui/use-toast'
 import {
   Card,
   CardHeader,
@@ -32,6 +33,7 @@ type Giveaway = {
   num_winners: number
   status: string
   creator_id: string
+  winner_info_json: any
 }
 
 type Participant = {
@@ -49,7 +51,9 @@ export default function ManageGiveawayPage() {
   const [participants, setParticipants] = useState<Participant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [winnerInfo, setWinnerInfo] = useState('')
+  const [winnerInput, setWinnerInput] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchGiveawayAndParticipants() {
@@ -90,6 +94,15 @@ export default function ManageGiveawayPage() {
 
         setGiveaway(giveawayData)
 
+        // Populate winnerInput with existing winner_info_json if it exists
+        if (giveawayData.winner_info_json) {
+          if (typeof giveawayData.winner_info_json === 'string') {
+            setWinnerInput(giveawayData.winner_info_json)
+          } else {
+            setWinnerInput(JSON.stringify(giveawayData.winner_info_json, null, 2))
+          }
+        }
+
         // Fetch participants
         const { data: participantsData, error: participantsError } = await supabase
           .from('participants')
@@ -113,6 +126,45 @@ export default function ManageGiveawayPage() {
 
     fetchGiveawayAndParticipants()
   }, [id, currentUser])
+
+  const handleSaveWinners = async () => {
+    if (!giveaway || !currentUser) return
+
+    try {
+      setIsSaving(true)
+      setSaveError(null)
+
+      const { error } = await supabase
+        .from('giveaways')
+        .update({ winner_info_json: winnerInput })
+        .eq('id', giveaway.id)
+        .eq('creator_id', currentUser.id)
+
+      if (error) {
+        throw error
+      }
+
+      // Update local state
+      setGiveaway(prev => prev ? { ...prev, winner_info_json: winnerInput } : null)
+
+      toast({
+        title: "Winners Saved",
+        description: "Winner information has been successfully updated."
+      })
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save winner information'
+      setSaveError(errorMessage)
+      
+      toast({
+        title: "Error Saving Winners",
+        description: errorMessage,
+        variant: "destructive"
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
@@ -234,20 +286,42 @@ export default function ManageGiveawayPage() {
               <Label htmlFor="winner-info">Enter Winner(s) Information:</Label>
               <Textarea
                 id="winner-info"
-                value={winnerInfo}
-                onChange={(e) => setWinnerInfo(e.target.value)}
+                value={winnerInput}
+                onChange={(e) => setWinnerInput(e.target.value)}
                 placeholder="Enter the winner details here (e.g., participant IDs, names, contact information, etc.)"
                 className="min-h-[120px]"
               />
               <p className="text-sm text-gray-500">
                 You can manually enter the winner information based on the participants list above.
                 This will be saved as the official winner record for this giveaway.
+                You can enter plain text or JSON format (e.g., {"winners": ["participant_id_1", "participant_id_2"]}).
               </p>
             </div>
+
+            {saveError && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+                {saveError}
+              </div>
+            )}
             
-            <Button disabled className="w-full">
-              Save Winners (Coming Soon)
+            <Button 
+              onClick={handleSaveWinners}
+              disabled={isSaving}
+              className="w-full"
+            >
+              {isSaving ? 'Saving Winners...' : 'Save Winners'}
             </Button>
+
+            {giveaway.winner_info_json && (
+              <div className="mt-4 p-4 bg-green-50 rounded-md">
+                <h4 className="font-medium text-green-800 mb-2">Previously Saved Winner Information:</h4>
+                <pre className="text-sm text-green-700 whitespace-pre-wrap">
+                  {typeof giveaway.winner_info_json === 'string' 
+                    ? giveaway.winner_info_json 
+                    : JSON.stringify(giveaway.winner_info_json, null, 2)}
+                </pre>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
