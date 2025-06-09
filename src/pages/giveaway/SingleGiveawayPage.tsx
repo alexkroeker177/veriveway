@@ -22,6 +22,7 @@ type Giveaway = {
   num_winners: number
   status: string
   creator_id: string
+  winner_info_json: any
 }
 
 export default function SingleGiveawayPage() {
@@ -50,7 +51,7 @@ export default function SingleGiveawayPage() {
         setLoading(true)
         const { data: giveawayData, error: giveawayError } = await supabase
           .from('giveaways')
-          .select('*')
+          .select('*, winner_info_json')
           .eq('id', id)
           .single()
 
@@ -148,6 +149,8 @@ export default function SingleGiveawayPage() {
         return 'bg-green-100 text-green-800'
       case 'ended_awaiting_draw':
         return 'bg-yellow-100 text-yellow-800'
+      case 'ended':
+        return 'bg-red-100 text-red-800'
       case 'drawn':
         return 'bg-blue-100 text-blue-800'
       default:
@@ -180,6 +183,31 @@ export default function SingleGiveawayPage() {
       type: 'inactive',
       message: 'This giveaway is not currently active for joining.'
     }
+  }
+
+  const renderWinnerInfo = () => {
+    if (!giveaway || giveaway.status !== 'ended' || !giveaway.winner_info_json) {
+      return null
+    }
+
+    return (
+      <Card className="mt-6 border-green-200 bg-green-50">
+        <CardHeader>
+          <CardTitle className="text-green-800">🎉 Winner Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {typeof giveaway.winner_info_json === 'string' ? (
+            <p className="text-green-700 whitespace-pre-wrap">
+              {giveaway.winner_info_json}
+            </p>
+          ) : (
+            <pre className="whitespace-pre-wrap bg-white p-4 rounded-md text-sm text-green-700 border border-green-200">
+              {JSON.stringify(giveaway.winner_info_json, null, 2)}
+            </pre>
+          )}
+        </CardContent>
+      </Card>
+    )
   }
 
   if (loading) {
@@ -241,7 +269,7 @@ export default function SingleGiveawayPage() {
           </div>
         </CardContent>
 
-        {participationChecked && currentUser && (
+        {participationChecked && currentUser && giveaway.status !== 'ended' && (
           <CardFooter className="flex flex-col items-center space-y-4">
             {hasJoined ? (
               <p className="text-green-600 font-medium">
@@ -263,6 +291,8 @@ export default function SingleGiveawayPage() {
           </CardFooter>
         )}
       </Card>
+
+      {renderWinnerInfo()}
     </div>
   )
 }
