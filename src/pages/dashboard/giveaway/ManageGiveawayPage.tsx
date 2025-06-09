@@ -294,7 +294,7 @@ export default function ManageGiveawayPage() {
               <p className="text-sm text-gray-500">
                 You can manually enter the winner information based on the participants list above.
                 This will be saved as the official winner record for this giveaway.
-                You can enter plain text or JSON format (e.g., {"winners": ["participant_id_1", "participant_id_2"]}).
+                You can enter plain text or JSON format (e.g., &lbrace;"winners": ["participant_id_1", "participant_id_2"]&rbrace;).
               </p>
             </div>
 
