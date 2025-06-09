@@ -112,6 +112,8 @@ export default function DashboardPage() {
         return 'bg-green-100 text-green-800'
       case 'ended_awaiting_draw':
         return 'bg-yellow-100 text-yellow-800'
+      case 'ended':
+        return 'bg-red-100 text-red-800'
       case 'drawn':
         return 'bg-blue-100 text-blue-800'
       default:
@@ -197,50 +199,59 @@ export default function DashboardPage() {
                           <Link to={`/giveaway/${giveaway.id}`}>
                             <Button variant="outline" size="sm">View</Button>
                           </Link>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
+                          
+                          {giveaway.status === 'ended' ? (
+                            <Link to={`/dashboard/giveaway/${giveaway.id}/manage`}>
+                              <Button variant="default" size="sm">
+                                Manage Winners
                               </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {giveaway.status === 'draft' && (
-                                <>
-                                  <DropdownMenuItem
-                                    onClick={() => handleUpdateStatus(giveaway.id, 'published')}
-                                  >
-                                    Publish (Upcoming)
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => handleUpdateStatus(giveaway.id, 'active')}
-                                  >
-                                    Make Active (Joinable)
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                              {giveaway.status === 'published' && (
-                                <>
-                                  <DropdownMenuItem
-                                    onClick={() => handleUpdateStatus(giveaway.id, 'active')}
-                                  >
-                                    Make Active (Joinable)
-                                  </DropdownMenuItem>
+                            </Link>
+                          ) : (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {giveaway.status === 'draft' && (
+                                  <>
+                                    <DropdownMenuItem
+                                      onClick={() => handleUpdateStatus(giveaway.id, 'published')}
+                                    >
+                                      Publish (Upcoming)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => handleUpdateStatus(giveaway.id, 'active')}
+                                    >
+                                      Make Active (Joinable)
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                                {giveaway.status === 'published' && (
+                                  <>
+                                    <DropdownMenuItem
+                                      onClick={() => handleUpdateStatus(giveaway.id, 'active')}
+                                    >
+                                      Make Active (Joinable)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => handleUpdateStatus(giveaway.id, 'ended')}
+                                    >
+                                      End Giveaway
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                                {giveaway.status === 'active' && (
                                   <DropdownMenuItem
                                     onClick={() => handleUpdateStatus(giveaway.id, 'ended')}
                                   >
                                     End Giveaway
                                   </DropdownMenuItem>
-                                </>
-                              )}
-                              {giveaway.status === 'active' && (
-                                <DropdownMenuItem
-                                  onClick={() => handleUpdateStatus(giveaway.id, 'ended')}
-                                >
-                                  End Giveaway
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

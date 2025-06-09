@@ -9,6 +9,7 @@ import DashboardPage from '@/pages/dashboard/DashboardPage'
 import CreateGiveawayPage from '@/pages/giveaway/CreateGiveawayPage'
 import SingleGiveawayPage from '@/pages/giveaway/SingleGiveawayPage'
 import UserProfilePage from '@/pages/user/UserProfilePage'
+import ManageGiveawayPage from '@/pages/dashboard/giveaway/ManageGiveawayPage'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { Toaster } from '@/components/ui/toaster'
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/create-giveaway" element={<CreateGiveawayPage />} />
           <Route path="/profile" element={<UserProfilePage />} />
+          <Route path="/dashboard/giveaway/:id/manage" element={<ManageGiveawayPage />} />
         </Route>
       </Routes>
       <Toaster />
