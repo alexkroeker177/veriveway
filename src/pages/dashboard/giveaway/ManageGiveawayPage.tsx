@@ -134,9 +134,17 @@ export default function ManageGiveawayPage() {
       setIsSaving(true)
       setSaveError(null)
 
+      // Try to parse the input as JSON, otherwise use as plain text
+      let dataToStore;
+      try {
+        dataToStore = JSON.parse(winnerInput);
+      } catch (e) {
+        dataToStore = winnerInput; // If it's not valid JSON, use the string as is
+      }
+
       const { error } = await supabase
         .from('giveaways')
-        .update({ winner_info_json: winnerInput })
+        .update({ winner_info_json: dataToStore })
         .eq('id', giveaway.id)
         .eq('creator_id', currentUser.id)
 
@@ -145,7 +153,7 @@ export default function ManageGiveawayPage() {
       }
 
       // Update local state
-      setGiveaway(prev => prev ? { ...prev, winner_info_json: winnerInput } : null)
+      setGiveaway(prev => prev ? { ...prev, winner_info_json: dataToStore } : null)
 
       toast({
         title: "Winners Saved",
